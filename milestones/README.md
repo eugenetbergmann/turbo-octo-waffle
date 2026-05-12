@@ -5,7 +5,7 @@
 | #  | Milestone                          | Status |
 |----|------------------------------------|--------|
 | 01 | Landing tables + replication jobs  | ✅ Complete |
-| 02 | Core state tables + usp_state_refresh | 🔨 In Progress |
+| 02 | Core state tables + usp_state_refresh | ✅ Complete |
 | 03 | Exception buckets                  | Pending |
 | 04 | Snapshots + time-travel            | Pending |
 | 05 | Adapter views + buyer surface      | Pending |
@@ -39,3 +39,17 @@
 - Lot master filtered on `NONINVEN = 0`
 - All procs end with `EXEC dbo.usp_rep_log`
 - No magic numbers — config CTEs in every proc
+
+## Completed — Milestone 02: Core State Tables + usp_state_refresh
+
+### Files
+- `sql/ddl/02_state_tables.sql` — 5 state tables (st_ prefix)
+- `sql/procs/usp_state_refresh.sql` — State refresh procedure
+- `milestones/02_state_engine/02_smoke_test.sql` — Smoke test (9 tests)
+
+### Key Decisions
+- State tables use `st_` prefix, append-only, never UPDATE/DELETE
+- Config CTE drives all threshold logic (no magic numbers)
+- Non-inventory items excluded (NONINVEN = 0)
+- `usp_state_refresh` called from `usp_state_refresh_full` orchestration proc
+- Landing tables (h_*) are the sole source; MED/GP is never queried directly from state
